@@ -20,9 +20,9 @@ Create a 'Dummy' hardware device in Domoticz (if you don't already have one) and
 
 Edit main.js to match your Domoticz settings:
 ```
-const domoticzIp = "192.168.5.28"; // Domoticz IP address
-const domoticzPort = 8080; // Domoticz Port
-players.push({ name: "CORBIN", idx: 132, timer: null }); // Name of your Plex Player and IDX of the Domoticz text device that you have created
+domoticzServers.push({id: 1, domoticzUrl: "pi.domain.com", domoticzPort: 8080, domoticzLogin: "username:password"}); //Server 1
+
+players.push({ name: "mediaplayerid", idx: 41, timer: null, serverid: 1 }); // Jasper-PC
 ```
 
 Run the script:
