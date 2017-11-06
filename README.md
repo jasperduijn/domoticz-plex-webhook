@@ -21,6 +21,11 @@ npm install
 
 Create a 'Dummy' hardware device in Domoticz (if you don't already have one) and then create a 'Text' virtual sensor named Plex.
 
+Find your Plex Media player ID by following these steps:
+* Start Playing an item from the device you want to register
+* Go to your Plex Server session page http://plexserverip:32400/status/sessions?X-Plex-Token=yourtokenhere (To find X-Plex-Token https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token)
+* Find the "machineIdentifier" value for the player
+
 Edit main.js to match your Domoticz settings:
 ```
 domoticzServers.push({id: 1, domoticzUrl: "pi.domain.com", domoticzPort: 8080, domoticzLogin: "username:password"}); //Server 1
