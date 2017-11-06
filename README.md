@@ -11,7 +11,7 @@ Example usage is to control lights based on a movie being played, paused or stop
 ## Setup
 
 ```
-git clone https://github.com/corbinmunce/domoticz-plex-webhook.git
+git clone https://github.com/jasperduijn/domoticz-plex-webhook.git
 cd domoticz-plex-webhook
 npm install
 ```
