@@ -4,18 +4,20 @@ const request = require('request');
 const sha1 = require('sha1');
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Domoticz Settings
-const domoticzUrl = "192.168.5.28";
-const domoticzIp = 8080;
+const logging = false;
+
+
+
+var domoticzServers = [];
+domoticzServers.push({id: 1, domoticzUrl: "pi.domain.com", domoticzPort: 8080, domoticzLogin: "username:password"}); //Server 1
+domoticzServers.push({id: 2, domoticzUrl: "domoticz.example.com", domoticzPort: 1337, domoticzLogin: "Plex:P@ssw0rd!"}); //Server 2
 
 var players = [];
-players.push({ name: "CORBIN", idx: 132, timer: null });
-players.push({ name: "Plex Web (Chrome)", idx: 134, timer: null });
-players.push({ name: "Chromecast", idx: 135, timer: null });
-players.push({ name: "Mi Box", idx: 163, timer: null });
+players.push({ name: "mediaplayerid", idx: 41, timer: null, serverid: 1 }); // Jasper-PC
+players.push({ name: "mediaplayerid", idx: 61, timer: null, serverid: 2 }); //Ricardo Chrome
 
 const app = express();
-const port = 80;
+const port = 10000;
 
 const audioTimeoutMinutes = 10; // 10 - use a short timeout for audio
 const videoTimeoutMinutes = 180; // if no response received for 3 hours, set the device to stop
@@ -23,7 +25,7 @@ const videoTimeoutMinutes = 180; // if no response received for 3 hours, set the
 //var timeout = null;
 
 app.listen(port, () => {
-    console.log(`Express app running at http://localhost:${port}`);
+    console.log("Express app running at http://localhost:"+port);
 });
 
 // routes
@@ -31,10 +33,25 @@ app.post('/', upload.single('thumb'), function (req, res, next) {
     const payload = JSON.parse(req.body.payload);
 
     var idx;
+    var serverID
+    var domoLogin
+    var domoUrl
+    var domoPort
     try {
-        idx = players.find(x => x.name === payload.Player.title).idx;
+        idx = players.find(x => x.name === payload.Player.uuid).idx;
+	serverID = players.find(x => x.name === payload.Player.uuid).serverid;
+	domoLogin = domoticzServers.find(x => x.id === serverID).domoticzLogin
+	domoUrl = domoticzServers.find(x => x.id === serverID).domoticzUrl
+	domoPort = domoticzServers.find(x => x.id === serverID).domoticzPort
+	//if (logging == true) {
+        //console.log("Player found: " + payload.Account.title );
+	console.log("Player found for: "+ payload.Account.title +" / Domoticzserver: " +domoLogin + "@" + domoUrl + ":" + domoPort);
+	//console.log(""+playload);
+	//}
     } catch (Exception) {
-        console.log("error");
+        if (logging == true) {
+	    console.log("error: player not found");
+	}
     }
 
     if (idx != undefined) {
@@ -44,7 +61,7 @@ app.post('/', upload.single('thumb'), function (req, res, next) {
         const key = sha1(payload.Server.uuid + payload.Metadata.ratingKey);    
 
         // missing required properties
-        if (!payload.user || !payload.Metadata || !(isAudio || isVideo)) {
+        if (!payload.Metadata || !(isAudio || isVideo)) {
             return res.sendStatus(400);
         }
 
@@ -55,7 +72,7 @@ app.post('/', upload.single('thumb'), function (req, res, next) {
         }
 
         var svalue = payload.event.replace("media.", "") + ": " + formatTitle(payload.Metadata) + " - " + formatSubtitle(payload.Metadata);
-        request.get("http://" + domoticzUrl + ":" + domoticzIp + "/json.htm?type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue=" + svalue)
+        request.get("http://" + domoLogin + "@" + domoUrl + ":" + domoPort + "/json.htm?type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue=" + svalue)
         .on('error', function (err) {
             console.log('error sending to Domoticz');
         });
@@ -67,7 +84,7 @@ app.post('/', upload.single('thumb'), function (req, res, next) {
         if (isVideo) {
             timeoutMinutes = videoTimeoutMinutes
         }
-        players.find(x => x.name === payload.Player.title).timer = setTimeout(setDomoticzStopped, timeoutMinutes * 60000, idx);
+        players.find(x => x.name === payload.Player.title).timer = setTimeout(setDomoticzStopped, timeoutMinutes * 60000, idx, serverID);
 
     }
 
@@ -76,9 +93,12 @@ app.post('/', upload.single('thumb'), function (req, res, next) {
 });
 
 
-function setDomoticzStopped(idx) {
+function setDomoticzStopped(idx, serverID) {
     console.log('stopping ' + idx);
-    request.get("http://" + domoticzUrl + ":" + domoticzIp + "/json.htm?type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue=stop")
+    domoLogin = domoticzServers.find(x => x.id === serverID).domoticzLogin
+    domoUrl = domoticzServers.find(x => x.id === serverID).domoticzUrl
+    domoPort = domoticzServers.find(x => x.id === serverID).domoticzPort
+    request.get("http://" + domoLogin + "@" + domoUrl + ":" + domoPort + "/json.htm?type=comand&param=udevice&idx=" + idx + "&nvalue=0&svalue=stop")
     .on('error', function (err) {
         console.log('error sending to Domoticz');
     });
