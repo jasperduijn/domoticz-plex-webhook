@@ -19,7 +19,7 @@ cd domoticz-plex-webhook
 npm install
 ```
 
-Create a 'Dummy' hardware device in Domoticz (if you don't already have one) and then create a 'Text' virtual sensor named Plex.
+Create a 'Dummy' hardware device in Domoticz (if you don't already have one) and then create a 'Text' virtual sensor named Plex. Go to devices and take note of the idx number.
 
 Find your Plex Media player ID by following these steps:
 * Start Playing an item from the device you want to register
