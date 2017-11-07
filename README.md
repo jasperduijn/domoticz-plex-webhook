@@ -24,9 +24,9 @@ Create a 'Dummy' hardware device in Domoticz (if you don't already have one) and
 Add a webhook https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks in Plex to point to the server where you will be running main.js from.  eg http://192.168.0.11/11000
 
 Find your Plex Media player ID by following these steps:
-*Enable logging by setting logging = true;
-*Start the script (see Run the script)
-*Play an item on the player you wish to add and look at the script output.
+* Enable logging by setting logging = true;
+* Start the script (see Run the script)
+* Play an item on the player you wish to add and look at the script output.
 
 Edit main.js to match your Domoticz settings:
 ```
