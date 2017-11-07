@@ -6,8 +6,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const logging = false;
 
-
-
 var domoticzServers = [];
 domoticzServers.push({id: 1, domoticzUrl: "pi.domain.com", domoticzPort: 8080, domoticzLogin: "username:password"}); //Server 1
 domoticzServers.push({id: 2, domoticzUrl: "domoticz.example.com", domoticzPort: 1337, domoticzLogin: "Plex:P@ssw0rd!"}); //Server 2
@@ -43,14 +41,10 @@ app.post('/', upload.single('thumb'), function (req, res, next) {
 	domoLogin = domoticzServers.find(x => x.id === serverID).domoticzLogin
 	domoUrl = domoticzServers.find(x => x.id === serverID).domoticzUrl
 	domoPort = domoticzServers.find(x => x.id === serverID).domoticzPort
-	//if (logging == true) {
-        //console.log("Player found: " + payload.Account.title );
 	console.log("Player found for: "+ payload.Account.title +" / Domoticzserver: " +domoLogin + "@" + domoUrl + ":" + domoPort);
-	//console.log(""+playload);
-	//}
     } catch (Exception) {
         if (logging == true) {
-	    console.log("error: player not found");
+	    console.log("error: player not found: " + payload.Account.title + " MachineID: " + payload.Player.uuid);
 	}
     }
 
