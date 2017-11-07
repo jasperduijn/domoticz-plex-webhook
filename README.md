@@ -21,10 +21,12 @@ npm install
 
 Create a 'Dummy' hardware device in Domoticz (if you don't already have one) and then create a 'Text' virtual sensor named Plex. Go to devices and take note of the idx number.
 
+Add a webhook https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks in Plex to point to the server where you will be running main.js from.  eg http://192.168.0.11/11000
+
 Find your Plex Media player ID by following these steps:
-* Start Playing an item from the device you want to register
-* Go to your Plex Server session page http://plexserverip:32400/status/sessions?X-Plex-Token=yourtokenhere (To find X-Plex-Token https://support.plex.tv/hc/en-us/articles/204059436-Finding-an-authentication-token-X-Plex-Token)
-* Find the "machineIdentifier" value for the player
+*Enable logging by setting logging = true;
+*Start the script (see Run the script)
+*Play an item on the player you wish to add and look at the script output.
 
 Edit main.js to match your Domoticz settings:
 ```
@@ -38,9 +40,7 @@ Run the script:
 node main.js
 ```
 
-And then add a webhook https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks in Plex to point to the server your are running main.js from.  eg http://192.168.0.11/11000
-
-Once you have verified that it is running correctly from the command line, you can setup to run automatically by editing the domoticzPlex.service file to match your directories and running the commands below
+Once you've verified that it is running correctly from the command line, you can setup to run automatically by editing the domoticzPlex.service file to match your directories and running the commands below
 ```
 sudo cp domoticzPlex.service /etc/systemd/system/domoticzPlex.service
 sudo systemctl enable domoticzPlex
